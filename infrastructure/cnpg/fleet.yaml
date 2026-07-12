@@ -1,0 +1,7 @@
+defaultNamespace: cnpg-system
+helm:
+  repo: https://cloudnative-pg.github.io/charts
+  chart: cloudnative-pg
+  releaseName: cnpg
+  # Optional: Pin the chart version to ensure reproducible deployments
+  # version: "0.21.5"
