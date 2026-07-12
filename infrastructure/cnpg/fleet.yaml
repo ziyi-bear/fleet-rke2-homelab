@@ -5,3 +5,38 @@ helm:
   releaseName: cnpg
   # Optional: Pin the chart version to ensure reproducible deployments
   # version: "0.21.5"
+
+# 說明與問題排除：
+# 原因：當部署 CloudNativePG (cnpg) 時，該 operator 在運行時會動態產生並注入/更新
+#       MutatingWebhookConfiguration 與 ValidatingWebhookConfiguration 的 caBundle 欄位。
+#       這會導致 Rancher Fleet 偵測到與 Git 設定不符的狀態漂移 (drift)，使 Bundle 狀態顯示為 "Modified"。
+# 解決方式：使用 diff.comparePatches 告知 Fleet 忽略對 /webhooks/*/clientConfig/caBundle 欄位的比對。
+#          因為 JSON Pointer 不支援萬用字元，故此處必須針對每個 webhook 索引 (index) 進行明確排除。
+diff:
+  comparePatches:
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: MutatingWebhookConfiguration
+      name: cnpg-mutating-webhook-configuration
+      operations:
+        - op: remove
+          path: /webhooks/0/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/1/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/2/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/3/clientConfig/caBundle
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: ValidatingWebhookConfiguration
+      name: cnpg-validating-webhook-configuration
+      operations:
+        - op: remove
+          path: /webhooks/0/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/1/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/2/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/3/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/4/clientConfig/caBundle
