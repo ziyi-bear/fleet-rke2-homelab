@@ -1,0 +1,7 @@
+defaultNamespace: open-webui
+labels:
+  app: open-webui-postgres
+dependsOn:
+  - selector:
+      matchLabels:
+        app: cnpg

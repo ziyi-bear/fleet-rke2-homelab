@@ -1,4 +1,6 @@
 defaultNamespace: cnpg-system
+labels:
+  app: cnpg
 helm:
   repo: https://cloudnative-pg.github.io/charts
   chart: cloudnative-pg
