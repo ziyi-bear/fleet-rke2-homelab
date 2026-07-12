@@ -12,3 +12,18 @@ helm:
       csi:
         volumeSnapshots:
           enabled: false
+    # Disable the replicated storage engine (Mayastor) to avoid pre-upgrade hook and resource failures
+    engines:
+      replicated:
+        mayastor:
+          enabled: false
+    # Disable telemetry/observability collectors (Alloy & Loki) as they are only needed for Mayastor
+    alloy:
+      enabled: false
+    loki:
+      enabled: false
+    # Disable MinIO and NATS as they serve as backing storage/message bus dependencies for Mayastor/Loki
+    minio:
+      enabled: false
+    nats:
+      enabled: false
