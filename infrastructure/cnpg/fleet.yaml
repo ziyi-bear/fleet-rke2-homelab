@@ -7,11 +7,11 @@ helm:
   # version: "0.21.5"
 
 # 說明與問題排除：
-# 原因：當部署 CloudNativePG (cnpg) 時，該 operator 在運行時會動態產生並注入/更新
-#       MutatingWebhookConfiguration 與 ValidatingWebhookConfiguration 的 caBundle 欄位。
-#       這會導致 Rancher Fleet 偵測到與 Git 設定不符的狀態漂移 (drift)，使 Bundle 狀態顯示為 "Modified"。
-# 解決方式：使用 diff.comparePatches 告知 Fleet 忽略對 /webhooks/*/clientConfig/caBundle 欄位的比對。
-#          因為 JSON Pointer 不支援萬用字元，故此處必須針對每個 webhook 索引 (index) 進行明確排除。
+# 原因：當部署 CloudNativePG (cnpg) 時，Kubernetes 會自動帶入預設欄位 (如 failurePolicy, matchPolicy 等)，
+#       且 operator 會在運行時動態產生並注入/更新 MutatingWebhookConfiguration 與 ValidatingWebhookConfiguration
+#       的 caBundle 欄位。這會導致 Rancher Fleet 偵測到與 Git 設定不符的狀態漂移 (drift)，使 Bundle 狀態顯示為 "Modified"。
+# 解決方式：使用 diff.comparePatches 告知 Fleet 忽略整個 /webhooks 陣列欄位的比對。這可一次性排除 caBundle
+#          與所有 Kubernetes 自動產生的預設欄位之比對，避免因任何欄位異動或預設值而卡在 "Modified" 狀態。
 diff:
   comparePatches:
     - apiVersion: admissionregistration.k8s.io/v1
@@ -19,24 +19,10 @@ diff:
       name: cnpg-mutating-webhook-configuration
       operations:
         - op: remove
-          path: /webhooks/0/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/1/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/2/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/3/clientConfig/caBundle
+          path: /webhooks
     - apiVersion: admissionregistration.k8s.io/v1
       kind: ValidatingWebhookConfiguration
       name: cnpg-validating-webhook-configuration
       operations:
         - op: remove
-          path: /webhooks/0/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/1/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/2/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/3/clientConfig/caBundle
-        - op: remove
-          path: /webhooks/4/clientConfig/caBundle
+          path: /webhooks
