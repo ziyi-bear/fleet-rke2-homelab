@@ -1,0 +1,9 @@
+defaultNamespace: sealed-secrets
+labels:
+  app: sealed-secrets
+
+helm:
+  repo: https://bitnami.github.io/sealed-secrets
+  chart: sealed-secrets
+  releaseName: sealed-secrets
+  version: 2.19.1
