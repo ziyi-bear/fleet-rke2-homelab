@@ -1,0 +1,32 @@
+defaultNamespace: open-webui
+
+labels:
+  app: open-webui-searxng
+
+helm:
+  repo: https://charts.kubito.dev
+  chart: searxng
+  releaseName: searxng
+  version: 1.1.4
+  values:
+    config:
+      settings:
+        enabled: true
+        data: |
+          # 繼承並使用預設的設定值，下方僅針對特定的參數進行覆寫
+          use_default_settings: true
+          server:
+            # 安全性金鑰：已使用隨機 32-byte 十六進位字串，避免使用 Chart 預設的公開金鑰
+            secret_key: "6b2a0fbcf7c28d541e21b06c83df9e4726f4f228b3c990263f10ef37cf8480d1"
+            # 速率限制：必須設為 false。因為 Open WebUI 的所有搜尋請求都來自同一個 Pod IP，
+            # 開啟 limiter 會導致 Open WebUI 被判定為惡意爬蟲而回傳 429 錯誤
+            limiter: false
+            # 圖片代理：防止用戶瀏覽器直接下載搜尋結果圖片以保護隱私 (RAG 用途可視情況設為 false)
+            image_proxy: true
+            port: 8080
+            bind_address: "0.0.0.0"
+          search:
+            # 允許的回傳格式：必須包含 json，因為 Open WebUI 是透過 JSON API 來讀取搜尋結果
+            formats:
+              - html
+              - json
