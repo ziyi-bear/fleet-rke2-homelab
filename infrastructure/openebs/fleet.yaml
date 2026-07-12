@@ -1,4 +1,6 @@
 defaultNamespace: openebs
+labels:
+  app: openebs
 
 helm:
   repo: https://openebs.github.io/openebs
@@ -12,8 +14,14 @@ helm:
       csi:
         volumeSnapshots:
           enabled: false
-    # Disable the replicated storage engine (Mayastor) to avoid pre-upgrade hook and resource failures
+    # Configure storage engines: enable ZFS and disable LVM/Mayastor
     engines:
+      local:
+        zfs:
+          enabled: true
+        lvm:
+          enabled: false
+      # Disable the replicated storage engine (Mayastor) to avoid pre-upgrade hook and resource failures
       replicated:
         mayastor:
           enabled: false

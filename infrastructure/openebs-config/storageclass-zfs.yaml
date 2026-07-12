@@ -1,0 +1,24 @@
+# 說明與客製化原因：
+# 1. 隔離與特定硬碟綁定：預設的 OpenEBS ZFS StorageClass 通常會綁定到預設名為 `zfspv-pool` 的 ZFS Pool。
+#    為了將此慢速 HDD 獨立且專屬給 OpenEBS 使用，我們手動建立了一個名為 `openebs-hdd-pool` 的 ZFS Pool。
+#    因此需要客製化 StorageClass 的 `poolname` 參數來精確指向該專屬 HDD Pool。
+# 2. 針對慢速 HDD 與高記憶體進行效能調優：
+#    - `compression: lz4`: 啟用 ZFS 的 LZ4 壓縮，在記憶體中完成資料壓縮後才寫入慢速硬碟，
+#      可大幅減少硬碟實際寫入/讀取的資料量，進而有效提升這顆慢速 HDD 的吞吐量。
+#    - `volumeBindingMode: WaitForFirstConsumer`: 這是 LocalPV 運作的核心，可確保磁碟區
+#      只會在 Pod 實際調度到該節點時才進行綁定，避免 Pod 與儲存空間位置不一致的問題。
+# 3. 避免 Fleet 漂移與升級覆寫：
+#    獨立建立 StorageClass，能將儲存配置與 OpenEBS Helm Chart 的升級生命週期解耦，
+#    避免日後 OpenEBS 升級時，預設的 StorageClass 設定被 Chart 覆寫，或引發 Rancher Fleet 的狀態漂移 (drift) 告警。
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-hdd
+provisioner: zfs.csi.openebs.io
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  recordsize: "128k"
+  compression: "lz4"
+  fstype: "zfs"
+  poolname: "openebs-hdd-pool"

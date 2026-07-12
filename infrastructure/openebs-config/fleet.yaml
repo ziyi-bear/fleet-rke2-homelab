@@ -1,0 +1,6 @@
+defaultNamespace: openebs
+
+dependsOn:
+  - selector:
+      matchLabels:
+        app: openebs
