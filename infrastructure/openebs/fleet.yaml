@@ -6,3 +6,9 @@ helm:
   releaseName: openebs
   # Pin to a stable version (e.g., 4.1.0)
   version: 4.5.1
+  values: 
+    # Disable volume snapshots to avoid conflicts with existing cluster CRDs (rke2-snapshot-controller)
+    openebs-crds:
+      csi:
+        volumeSnapshots:
+          enabled: false
