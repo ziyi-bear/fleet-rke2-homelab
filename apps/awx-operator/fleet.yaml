@@ -1,0 +1,9 @@
+defaultNamespace: awx
+labels:
+  app: awx-operator
+
+helm:
+  repo: https://ansible-community.github.io/awx-operator-helm/
+  chart: awx-operator
+  releaseName: awx-operator
+  version: 3.2.1
