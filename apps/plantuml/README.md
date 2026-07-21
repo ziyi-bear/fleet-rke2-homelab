@@ -37,10 +37,7 @@ helm:
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
       hosts:
-        - host: "plantuml.${ .ClusterValues.domain.base }"
-          paths:
-            - path: /
-              pathType: Prefix
+        - "plantuml.${ .ClusterValues.domain.base }"
       tls:
         - secretName: plantuml-tls
           hosts:
