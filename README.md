@@ -85,7 +85,10 @@ spec:
     domain:
       base: mlc.app
     ingress:
-      class: traefik
+      class: nginx
+      targets:
+        nginx: p1-ziyi-bear.duckdns.org
+        traefik: p2-ziyi-bear.duckdns.org
     storage:
       hddClass: openebs-zfs-hdd
       ssdClass: longhorn-ssd
@@ -97,7 +100,9 @@ spec:
 | :--- | :--- | :--- | :--- |
 | `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager 發證機構名稱 |
 | `domain.base` | `mlc.app` | `${ .ClusterValues.domain.base }` | 叢集基礎網域名稱 |
-| `ingress.class` | `traefik` | `${ .ClusterValues.ingress.class }` | Ingress Controller 類別 |
+| `ingress.class` | `nginx` | `${ .ClusterValues.ingress.class }` | 預設 Ingress Controller 類別 |
+| `ingress.targets.nginx` | `p1-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.nginx }` | `nginx` Ingress Class 之公網/目標 Host |
+| `ingress.targets.traefik` | `p2-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.traefik }` | `traefik` Ingress Class 之公網/目標 Host |
 | `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量/慢速 HDD 儲存類別 |
 | `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
 

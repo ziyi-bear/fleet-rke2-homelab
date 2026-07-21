@@ -13,6 +13,8 @@ helm:
       ingressClassName: "nginx"
       annotations:
         cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+        external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
       hosts:
         - host: "plantuml.${ .ClusterValues.domain.base }"
           paths:
