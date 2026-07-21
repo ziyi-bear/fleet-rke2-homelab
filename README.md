@@ -30,6 +30,7 @@
 * **[coder](apps/coder/)**：基於 Kubernetes 的遠端雲端開發環境平台。
 * **[guacamole](apps/guacamole/)**：無用戶端的遠端桌面網關 (RDP/SSH/VNC)。
 * **[open-webui](apps/open-webui/)**：用於互動的 AI Web 介面。
+* **[plantuml](apps/plantuml/)**：PlantUML 繪圖與渲染服務。
 * **[ollama](base/ollama/)**：本地大語言模型 (LLM) 運行引擎。
 
 ---
@@ -62,8 +63,10 @@ fleet-rke2-homelab/
     │   └── fleet.yaml                    # Coder 部署設定
     ├── guacamole/
     │   └── fleet.yaml                    # Apache Guacamole 部署設定
-    └── open-webui/
-        └── fleet.yaml                    # Open WebUI (Apps 整合版本)
+    ├── open-webui/
+    │   └── fleet.yaml                    # Open WebUI (Apps 整合版本)
+    └── plantuml/
+        └── fleet.yaml                    # PlantUML Server 部署設定
 ```
 
 ---
