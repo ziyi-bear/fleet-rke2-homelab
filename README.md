@@ -41,9 +41,6 @@
 ```text
 fleet-rke2-homelab/
 ├── README.md                             # 本說明文件
-├── clusters/                             # 叢集配置
-│   └── rke2-homelab/
-│       └── fleet.yaml                    # 定義此叢集的目標與標籤
 ├── infrastructure/                       # 核心基礎設施 Bundles
 │   ├── cnpg/
 │   │   └── fleet.yaml                    # CloudNativePG 部署設定
@@ -67,6 +64,52 @@ fleet-rke2-homelab/
     │   └── fleet.yaml                    # Apache Guacamole 部署設定
     └── open-webui/
         └── fleet.yaml                    # Open WebUI (Apps 整合版本)
+```
+
+---
+
+## 🌐 叢集全域變數 (Cluster templateValues)
+
+在 Rancher 平台的 `Cluster` 資源 (`fleet-local` 命名空間下的 `local` 叢集) 之 `spec.templateValues` 中可定義叢集共享變數。本專案中的所有 Fleet Bundle (`fleet.yaml`) 可透過 `${ .ClusterValues.<key> }` 動態引用：
+
+### Rancher Cluster 設定範例 (`spec.templateValues`)
+可在 Rancher UI 或經由 `kubectl edit cluster -n fleet-local local` 設定：
+```yaml
+spec:
+  templateValues:
+    certManager:
+      clusterIssuer: letsencrypt-cloudflare
+    domain:
+      base: mlc.app
+    ingress:
+      class: traefik
+    storage:
+      hddClass: openebs-zfs-hdd
+      ssdClass: longhorn-ssd
+```
+
+### 專案可用的共享變數列表：
+
+| 變數路徑 (Key Path) | 設定範例值 | Fleet 引用語法 | 說明 |
+| :--- | :--- | :--- | :--- |
+| `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager 發證機構名稱 |
+| `domain.base` | `mlc.app` | `${ .ClusterValues.domain.base }` | 叢集基礎網域名稱 |
+| `ingress.class` | `traefik` | `${ .ClusterValues.ingress.class }` | Ingress Controller 類別 |
+| `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量/慢速 HDD 儲存類別 |
+| `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
+
+### `fleet.yaml` 引用範例：
+```yaml
+helm:
+  values:
+    ingress:
+      ingressClassName: "${ .ClusterValues.ingress.class }"
+      annotations:
+        cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
+      hosts:
+        - host: "app.${ .ClusterValues.domain.base }"
+    persistence:
+      storageClass: "${ .ClusterValues.storage.ssdClass }"
 ```
 
 ---
