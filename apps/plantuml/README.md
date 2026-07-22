@@ -29,6 +29,13 @@ helm:
   chart: plantuml
   releaseName: plantuml
   values:
+    image:
+      tag: jetty
+    env:
+      - name: PLANTUML_LIMIT_SIZE
+        value: "8192"  # 將圖片上限放寬至 8192px (若還不夠可改為 16384)
+      - name: JAVA_TOOL_OPTIONS
+        value: "-Djetty.httpConfig.requestHeaderSize=131072"
     ingress:
       enabled: true
       ingressClassName: "nginx"
@@ -36,8 +43,8 @@ helm:
         cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
-        nginx.ingress.kubernetes.io/large-client-header-buffers: "4 64k"
-        nginx.ingress.kubernetes.io/client-header-buffer-size: "64k"
+        nginx.ingress.kubernetes.io/large-client-header-buffers: "4 128k"
+        nginx.ingress.kubernetes.io/client-header-buffer-size: "128k"
       hosts:
         - "plantuml.${ .ClusterValues.domain.base }"
       tls:
