@@ -8,6 +8,8 @@ helm:
   chart: plantuml
   releaseName: plantuml
   values:
+    image:
+      tag: jetty
     env:
       - name: PLANTUML_LIMIT_SIZE
         value: "8192"  # 將圖片上限放寬至 8192px (若還不夠可改為 16384)
