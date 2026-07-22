@@ -36,6 +36,8 @@ helm:
         cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
+        nginx.ingress.kubernetes.io/large-client-header-buffers: "4 64k"
+        nginx.ingress.kubernetes.io/client-header-buffer-size: "64k"
       hosts:
         - "plantuml.${ .ClusterValues.domain.base }"
       tls:
