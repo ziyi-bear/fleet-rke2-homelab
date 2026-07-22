@@ -12,9 +12,16 @@ helm:
       tag: jetty
     env:
       - name: PLANTUML_LIMIT_SIZE
-        value: "8192"  # 將圖片上限放寬至 8192px (若還不夠可改為 16384)
+        value: "16384"  # 將圖片上限放寬至 16384px
       - name: JAVA_TOOL_OPTIONS
-        value: "-Djetty.httpConfig.requestHeaderSize=131072"
+        value: "-Djetty.httpConfig.requestHeaderSize=131072 -XX:MaxRAMPercentage=75.0"
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: "2000m"
+        memory: "3Gi"
     ingress:
       enabled: true
       ingressClassName: "nginx"
