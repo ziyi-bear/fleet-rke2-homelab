@@ -15,7 +15,7 @@ helm:
         value: "-Djetty.httpConfig.requestHeaderSize=131072 -XX:MaxRAMPercentage=75.0"
     resources:
       requests:
-        cpu: "250m"
+        cpu: "500m"
         memory: "512Mi"
       limits:
         cpu: "2000m"
@@ -32,8 +32,8 @@ helm:
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
         nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
         nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
-        nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-        nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
         nginx.ingress.kubernetes.io/configuration-snippet: |
           http2_max_field_size 128k;
           http2_max_header_size 128k;
