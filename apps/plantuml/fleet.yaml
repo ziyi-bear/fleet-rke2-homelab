@@ -15,10 +15,10 @@ helm:
         value: "-Djetty.httpConfig.requestHeaderSize=131072 -XX:MaxRAMPercentage=75.0"
     resources:
       requests:
-        cpu: "500m"
+        cpu: "1000m"
         memory: "512Mi"
       limits:
-        cpu: "2000m"
+        cpu: "4000m"
         memory: "3Gi"
     ingress:
       enabled: true
