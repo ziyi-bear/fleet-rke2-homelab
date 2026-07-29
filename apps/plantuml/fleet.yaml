@@ -20,6 +20,29 @@ helm:
       limits:
         cpu: "4000m"
         memory: "3Gi"
+    startupProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 300
+      periodSeconds: 5
+      failureThreshold: 30
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 300
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 5
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 300
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
     ingress:
       enabled: true
       ingressClassName: "nginx"
@@ -34,9 +57,6 @@ helm:
         nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
         nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
         nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          http2_max_field_size 128k;
-          http2_max_header_size 128k;
       hosts:
         - "plantuml.${ .ClusterValues.domain.base }"
       tls:
