@@ -22,6 +22,7 @@
 * **[cert-manager](infrastructure/cert-manager/)**：自動化管理 SSL/TLS 憑證與發行。
 * **[openebs](infrastructure/openebs/)**：提供本地磁碟的動態儲存卷 (StorageClass) 供應。
 * **[cnpg (CloudNativePG)](infrastructure/cnpg/)**：管理叢集內高可用的 PostgreSQL 資料庫。
+* **[keda](infrastructure/keda/)**：Kubernetes 事件驅動自動擴充 (Event-driven Autoscaling) 控制器。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
 此類服務以 **Authentik** 為核心，提供單一登入（SSO）的整合入口與開發工具：
@@ -47,8 +48,10 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # CloudNativePG 部署設定
 │   ├── cert-manager/
 │   │   └── fleet.yaml                    # cert-manager 部署設定
-│   └── openebs/
-│       └── fleet.yaml                    # OpenEBS 部署設定
+│   ├── openebs/
+│   │   └── fleet.yaml                    # OpenEBS 部署設定
+│   └── keda/
+│       └── fleet.yaml                    # KEDA 部署設定
 ├── base/                                 # 基礎組件 (可供 kustomize 或參考)
 │   ├── ollama/
 │   │   └── fleet.yaml                    # Ollama 引擎設定

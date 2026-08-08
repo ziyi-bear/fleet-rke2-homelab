@@ -1,0 +1,9 @@
+defaultNamespace: keda
+labels:
+  app: keda
+
+helm:
+  repo: https://kedacore.github.io/charts
+  chart: keda
+  releaseName: keda
+  version: 2.16.1
