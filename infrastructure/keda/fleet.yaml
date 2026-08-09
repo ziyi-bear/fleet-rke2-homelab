@@ -1,4 +1,5 @@
 defaultNamespace: keda
+
 labels:
   app: keda
 
@@ -7,3 +8,23 @@ helm:
   chart: keda
   releaseName: keda
   version: 2.16.1
+
+diff:
+  comparePatches:
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: ValidatingWebhookConfiguration
+      name: keda-admission
+      operations:
+        - op: remove
+          path: /webhooks/0/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/1/clientConfig/caBundle
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: MutatingWebhookConfiguration
+      name: keda-admission
+      operations:
+        - op: remove
+          path: /webhooks/0/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/1/clientConfig/caBundle
+
