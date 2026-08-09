@@ -8,7 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: "${ .ClusterValues.storage.ssdClass }"
+  storageClassName: "${ .ClusterValues.storage.hddClass }"
   resources:
     requests:
       storage: 100Gi
