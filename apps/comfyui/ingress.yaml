@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: comfyui
+  namespace: comfyui
+  labels:
+    app: comfyui
+  annotations:
+    cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10G"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "comfyui"
+spec:
+  ingressClassName: "${ .ClusterValues.ingress.class }"
+  tls:
+    - hosts:
+        - "comfyui.${ .ClusterValues.domain.base }"
+      secretName: comfyui-tls
+  rules:
+    - host: "comfyui.${ .ClusterValues.domain.base }"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: comfyui
+                port:
+                  number: 8188

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comfyui
+  namespace: comfyui
+  labels:
+    app: comfyui
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: comfyui
+  template:
+    metadata:
+      labels:
+        app: comfyui
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: d1581with6600xt
+      initContainers:
+        - name: init-video-nodes
+          image: alpine/git:latest
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /root/ComfyUI/custom_nodes
+              cd /root/ComfyUI/custom_nodes
+              
+              if [ ! -d "ComfyUI-Manager" ]; then
+                echo "Installing ComfyUI-Manager..."
+                git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+              fi
+              if [ ! -d "ComfyUI-VideoHelperSuite" ]; then
+                echo "Installing ComfyUI-VideoHelperSuite..."
+                git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
+              fi
+              if [ ! -d "ComfyUI-AnimateDiff-Evolved" ]; then
+                echo "Installing ComfyUI-AnimateDiff-Evolved..."
+                git clone https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved.git
+              fi
+              if [ ! -d "ComfyUI-Frame-Interpolation" ]; then
+                echo "Installing ComfyUI-Frame-Interpolation..."
+                git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git
+              fi
+          volumeMounts:
+            - name: comfyui-storage
+              mountPath: /root/ComfyUI
+      containers:
+        - name: comfyui
+          image: yanwk/comfyui-boot:rocm
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HSA_OVERRIDE_GFX_VERSION
+              value: "10.3.0"
+            - name: PYTORCH_ROCM_ALLOC_CONF
+              value: "garbage_collection_threshold:0.8,max_split_size_mb:512"
+            - name: CLI_ARGS
+              value: "--lowvram --use-split-cross-attention --preview-method auto --listen 0.0.0.0 --port 8188"
+          ports:
+            - name: http
+              containerPort: 8188
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: "4000m"
+              memory: "8Gi"
+            limits:
+              cpu: "16000m"
+              memory: "32Gi"
+          volumeMounts:
+            - name: kfd
+              mountPath: /dev/kfd
+            - name: dri
+              mountPath: /dev/dri
+            - name: comfyui-storage
+              mountPath: /root/ComfyUI
+      volumes:
+        - name: kfd
+          hostPath:
+            path: /dev/kfd
+        - name: dri
+          hostPath:
+            path: /dev/dri
+        - name: comfyui-storage
+          persistentVolumeClaim:
+            claimName: comfyui-data
