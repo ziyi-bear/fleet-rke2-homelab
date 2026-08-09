@@ -11,3 +11,11 @@ diff:
       operations:
         - op: remove
           path: /spec/replicas
+
+ignore:
+  conditions:
+    - type: Active
+      status: "False"
+    - type: Scalable
+      status: "False"
+
