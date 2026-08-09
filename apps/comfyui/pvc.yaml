@@ -8,6 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: openebs-zfs-hdd
   resources:
     requests:
       storage: 100Gi

@@ -6,15 +6,23 @@ metadata:
   labels:
     app: comfyui
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cloudflare
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.alpha.kubernetes.io/target: p1-ziyi-bear.duckdns.org
     nginx.ingress.kubernetes.io/proxy-body-size: "10G"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "comfyui"
 spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - comfyui.mlc.app
+      secretName: comfyui-tls
   rules:
-    - http:
+    - host: comfyui.mlc.app
+      http:
         paths:
           - path: /
             pathType: Prefix

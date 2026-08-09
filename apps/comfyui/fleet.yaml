@@ -3,30 +3,4 @@ defaultNamespace: comfyui
 labels:
   app: comfyui
 
-targetCustomizations:
-  - name: default
-    clusterSelector: {}
-    yaml:
-      overlays:
-        - apiVersion: v1
-          kind: PersistentVolumeClaim
-          metadata:
-            name: comfyui-data
-          spec:
-            storageClassName: "${ .ClusterValues.storage.hddClass }"
-        - apiVersion: networking.k8s.io/v1
-          kind: Ingress
-          metadata:
-            name: comfyui
-          annotations:
-            cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
-            external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
-          spec:
-            ingressClassName: "${ .ClusterValues.ingress.class }"
-            tls:
-              - hosts:
-                  - "comfyui.${ .ClusterValues.domain.base }"
-                secretName: comfyui-tls
-            rules:
-              - host: "comfyui.${ .ClusterValues.domain.base }"
 
