@@ -1,0 +1,21 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: comfyui-scaler
+  namespace: comfyui
+  labels:
+    app: comfyui
+spec:
+  scaleTargetRef:
+    name: comfyui
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  cooldownPeriod: 900  # 15 minutes of inactivity before scaling to 0
+  pollingInterval: 30
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://rancher-monitoring-prometheus.cattle-monitoring-system.svc:9090
+        metricName: comfyui_ingress_requests
+        threshold: "1"
+        query: sum(rate(nginx_ingress_controller_requests{ingress="comfyui",namespace="comfyui"}[5m]))

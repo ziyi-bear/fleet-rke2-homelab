@@ -43,3 +43,14 @@
 
 * **網址**: `https://comfyui.${ .ClusterValues.domain.base }`
 * **超時設定**: 已增強 `proxy-read-timeout: 3600s` 與 `proxy-body-size: 10G` 以支援大檔影片上傳與長影片渲染。
+
+---
+
+## ⚡ KEDA 自動縮放與 GPU 記憶體完全釋放 (Scale-to-Zero)
+
+本服務已整合 **KEDA Autoscaler** (`scaledobject.yaml`)：
+
+* **自動縮減至 0 (Scale down to 0)**: 當超過 15 分鐘（900 秒）未有 Ingress HTTP 請求流量時，KEDA 會將 ComfyUI Pod 副本數自動縮減至 **0**。
+* **100% 釋放 GPU VRAM**: Pod 停止後，AMD Radeon RX 6600 XT 的 8 GB VRAM 與運算資源將被完全釋放，可完全讓給叢集內其他 AI 服務（如 Ollama 或 Open WebUI）使用。
+* **自動喚醒 (Scale up to 1)**: 當有新的流量請求存取時，KEDA 會自動重新拉起 Pod (0 → 1)。
+
