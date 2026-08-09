@@ -3,4 +3,11 @@ defaultNamespace: comfyui
 labels:
   app: comfyui
 
-
+diff:
+  comparePatches:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: comfyui
+      operations:
+        - op: remove
+          path: /spec/replicas
