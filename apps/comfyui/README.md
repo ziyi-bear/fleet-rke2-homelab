@@ -41,7 +41,7 @@
 
 ## 🌐 Ingress 存取資訊
 
-* **網址**: `https://comfyui.${ .ClusterValues.domain.base }`
+* **網址**: `https://comfyui.mlc.app`
 * **超時設定**: 已增強 `proxy-read-timeout: 3600s` 與 `proxy-body-size: 10G` 以支援大檔影片上傳與長影片渲染。
 
 ---
