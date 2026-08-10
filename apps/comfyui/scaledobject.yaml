@@ -18,4 +18,4 @@ spec:
         serverAddress: http://rancher-monitoring-prometheus.cattle-monitoring-system.svc:9090
         metricName: comfyui_ingress_requests
         threshold: "0"
-        query: sum(increase(nginx_ingress_controller_requests{ingress="comfyui",namespace="comfyui"}[2m])) or vector(0)
+        query: sum(increase(nginx_ingress_controller_requests{ingress="comfyui",namespace="kube-system"}[2m])) or vector(0)
