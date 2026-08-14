@@ -7,6 +7,7 @@
 ## 🚀 專案用途與 GitOps 機制
 
 此專案採用 **GitOps** 的核心理念，所有叢集狀態皆定義於 Git 儲存庫中。
+
 * **部署引擎**：[Rancher Fleet](https://fleet.rancher.io/)
 * **目標命名空間 (Namespace)**：`fleet-local` (代表 Rancher 管理的本地/主要叢集)
 * **部署資源**：包含核心 Kubernetes 基礎設施 (Infrastructure) 以及單一整合登入 (SSO) 平台應用
@@ -18,14 +19,18 @@
 本專案管轄的服務分為兩大類：
 
 ### 1. 🎛️ 關鍵基礎設施服務 (Infrastructure)
+
 此類服務提供叢集的核心功能（儲存、證書、資料庫等），是其他應用程式運行的基石：
+
 * **[cert-manager](infrastructure/cert-manager/)**：自動化管理 SSL/TLS 憑證與發行。
 * **[openebs](infrastructure/openebs/)**：提供本地磁碟的動態儲存卷 (StorageClass) 供應。
 * **[cnpg (CloudNativePG)](infrastructure/cnpg/)**：管理叢集內高可用的 PostgreSQL 資料庫。
 * **[keda](infrastructure/keda/)**：Kubernetes 事件驅動自動擴充 (Event-driven Autoscaling) 控制器。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
+
 此類服務以 **Authentik** 為核心，提供單一登入（SSO）的整合入口與開發工具：
+
 * **[authentik](apps/authentik/)**：SSO 登入驗證中心，負責使用者權限與身份驗證。
 * **[sonarqube](apps/sonarqube/)**：程式碼品質與安全性掃描平台。
 * **[coder](apps/coder/)**：基於 Kubernetes 的遠端雲端開發環境平台。
@@ -82,6 +87,7 @@ fleet-rke2-homelab/
 在 Rancher 平台的 `Cluster` 資源 (`fleet-local` 命名空間下的 `local` 叢集) 之 `spec.templateValues` 中可定義叢集共享變數。本專案中的所有 Fleet Bundle (`fleet.yaml`) 可透過 `${ .ClusterValues.<key> }` 動態引用：
 
 ### Rancher Cluster 設定範例 (`spec.templateValues`)
+
 可在 Rancher UI 或經由 `kubectl edit cluster -n fleet-local local` 設定：
 ```yaml
 spec:
@@ -113,6 +119,7 @@ spec:
 | `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
 
 ### `fleet.yaml` 引用範例：
+
 ```yaml
 helm:
   values:
