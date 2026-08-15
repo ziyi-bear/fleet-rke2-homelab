@@ -157,8 +157,12 @@ er605_lan4 -> oc200 : 100Mbps(cat6a)
 ```yaml
 spec:
   templateValues:
-    certManager:
-      clusterIssuer: letsencrypt-cloudflare
+    # 1. 叢集與基本資訊
+    cluster:
+      name: rke2-homelab
+      environment: homelab
+
+    # 2. 網路與網域設定
     domain:
       base: mlc.app
     ingress:
@@ -166,22 +170,49 @@ spec:
       targets:
         nginx: p1-ziyi-bear.duckdns.org
         traefik: p2-ziyi-bear.duckdns.org
+
+    # 3. 憑證管理
+    certManager:
+      clusterIssuer: letsencrypt-cloudflare
+
+    # 4. 分層儲存架構 (完整涵蓋架構圖的三種 StorageClass)
     storage:
-      hddClass: openebs-zfs-hdd
+      defaultClass: longhorn
       ssdClass: longhorn-ssd
+      hddClass: openebs-zfs-hdd
+      zfsPool: openebs-hdd-pool
+
+    # 5. AWS S3 異地備份 (對應架構圖 AWS S3 Bucket)
+    backup:
+      s3:
+        bucket: homelab-rke2-backups
+        region: ap-northeast-1
+        endpoint: s3.amazonaws.com
+
+    # 6. 硬體與 AI 運算節點 (對應 AMD RX 6600 XT / d1581with6600xt 節點)
+    hardware:
+      gpuNode: d1581with6600xt
+      gpuType: amd-rocm
 ```
 
 ### 專案可用的共享變數列表
 
 | 變數路徑 (Key Path) | 設定範例值 | Fleet 引用語法 | 說明 |
 | :--- | :--- | :--- | :--- |
-| `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager 發證機構名稱 |
+| `cluster.name` | `rke2-homelab` | `${ .ClusterValues.cluster.name }` | 叢集識別名稱 |
+| `cluster.environment` | `homelab` | `${ .ClusterValues.cluster.environment }` | 運行環境分類 (`homelab` / `prod`) |
 | `domain.base` | `mlc.app` | `${ .ClusterValues.domain.base }` | 叢集基礎網域名稱 |
 | `ingress.class` | `nginx` | `${ .ClusterValues.ingress.class }` | 預設 Ingress Controller 類別 |
 | `ingress.targets.nginx` | `p1-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.nginx }` | `nginx` Ingress Class 之公網/目標 Host |
 | `ingress.targets.traefik` | `p2-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.traefik }` | `traefik` Ingress Class 之公網/目標 Host |
-| `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量/慢速 HDD 儲存類別 |
+| `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager SSL 憑證簽發者名稱 |
+| `storage.defaultClass` | `longhorn` | `${ .ClusterValues.storage.defaultClass }` | 預設通用儲存類別 |
 | `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
+| `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量 ZFS HDD 儲存類別 |
+| `storage.zfsPool` | `openebs-hdd-pool` | `${ .ClusterValues.storage.zfsPool }` | OpenEBS ZFS 專屬儲存池名稱 |
+| `backup.s3.bucket` | `homelab-rke2-backups` | `${ .ClusterValues.backup.s3.bucket }` | AWS S3 異地備份 Bucket 名稱 |
+| `backup.s3.region` | `ap-northeast-1` | `${ .ClusterValues.backup.s3.region }` | AWS S3 區域 |
+| `hardware.gpuNode` | `d1581with6600xt` | `${ .ClusterValues.hardware.gpuNode }` | 具備 AMD GPU 硬體加速之 Node 名稱 |
 
 ### `fleet.yaml` 引用範例
 
@@ -192,10 +223,13 @@ helm:
       ingressClassName: "${ .ClusterValues.ingress.class }"
       annotations:
         cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
+        external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
       hosts:
         - host: "app.${ .ClusterValues.domain.base }"
     persistence:
       storageClass: "${ .ClusterValues.storage.ssdClass }"
+    nodeSelector:
+      kubernetes.io/hostname: "${ .ClusterValues.hardware.gpuNode }"
 ```
 
 ---
