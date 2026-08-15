@@ -106,9 +106,14 @@ cloud "homelab" {
         port sg108e_p5
       }
       cloud "Rancher local\nProvider: RKE2" {
-        card "ingressclass" {
+        card "IngressClass" {
           card "nginx\nController:\nk8s.io/ingress-nginx" as ic_nginx
           card "traefik\nController:\ntraefik.io/ingress-controller" as ic_traefik
+        }
+        card "StorageClass" {
+          card "longhorn (default)\ndriver.longhorn.io"
+          card "longhorn-ssd\ndriver.longhorn.io"
+          card "openebs-zfs-hdd\nzfs.csi.openebs.io"
         }
 
         card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
