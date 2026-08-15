@@ -103,7 +103,7 @@ cloud "homelab" {
         port sg108e_p6
         port sg108e_p5
       }
-      cloud "RKE2-local" {
+      cloud "Rancher local\nProvider: RKE2" {
         card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
           card "ST500DM002-1BD14\n大小: 465.8G"
           card "TS1TMTS830S\n大小: 953.9G"
