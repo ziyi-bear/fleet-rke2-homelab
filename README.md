@@ -125,6 +125,7 @@ cloud "homelab" {
           card "PC711 NVMe SK hynix\n大小: 238.5G"
         }
         card "Rke2-Agent Node\nhostname: d1581with6600xt\nModel name: Intel(R) Xeon(R) CPU D-1581 @ 1.80GHz\n記憶體: 64G\nAMD Navi 23 Radeon RX 6600 XT\n[192.168.80.27]" {
+          card "主機板: 火神d1581 r3"
           card "Apacer AS340\n系統碟\n大小: 120GB"
           card "storageclass: openebs-zfs-hdd\ncompression: lz4\nfstype: zfs\npoolname: openebs-hdd-pool\nrecordsize: 128k" {
             card "SEAGATE ST4000VX007\n大小: 3.6T\n備註: Seagate SkyHawk（監控鷹）4TB CMR（傳統磁性記錄)"
