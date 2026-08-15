@@ -109,6 +109,11 @@ cloud "homelab" {
         port sg108e_p5
       }
       cloud "Rancher local\nProvider: RKE2" {
+        card "backup_restore" {
+          card "etcd-s3\nEnable backup to S3\n/etc/rancher/rke2/config.yaml" as etcd_s3
+          card "longhorn backup" as lh_backup
+        }
+
         card "IngressClass" {
           card "nginx\nController:\nk8s.io/ingress-nginx" as ic_nginx
           card "traefik\nController:\ntraefik.io/ingress-controller" as ic_traefik
@@ -142,6 +147,9 @@ er605_p1 -> sg108e_p7 : 1G(cat6a)
 er605_p2 -> sg108e_p6 : 1G(cat6a)
 er605_p3 -> sg108e_p5 : 1G(cat6a)
 er605_lan4 -> oc200 : 100Mbps(cat6a)
+
+rke2_etcd_snapshot <--> s3 : s3 bucket
+lh_backup <--> s3 : s3 bucket
 @enduml
 ```
 
