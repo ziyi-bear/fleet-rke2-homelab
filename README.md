@@ -103,17 +103,19 @@ cloud "homelab" {
         port sg108e_p6
         port sg108e_p5
       }
-      card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
-        card "ST500DM002-1BD14\n大小: 465.8G"
-        card "TS1TMTS830S\n大小: 953.9G"
-        card "PC711 NVMe SK hynix\n大小: 238.5G"
-      }
-      card "Rke2-Agent Node\nhostname: d1581with6600xt\nModel name: Intel(R) Xeon(R) CPU D-1581 @ 1.80GHz\n記憶體: 64G\nAMD Navi 23 Radeon RX 6600 XT\n[192.168.80.27]" {
-        card "Apacer AS340\n系統碟\n大小: 120GB"
-        card "storageclass: openebs-zfs-hdd\ncompression: lz4\nfstype: zfs\npoolname: openebs-hdd-pool\nrecordsize: 128k" {
-          card "SEAGATE ST4000VX007\n大小: 3.6T\n備註: Seagate SkyHawk（監控鷹）4TB CMR（傳統磁性記錄)"
+      cloud "RKE2-local" {
+        card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
+          card "ST500DM002-1BD14\n大小: 465.8G"
+          card "TS1TMTS830S\n大小: 953.9G"
+          card "PC711 NVMe SK hynix\n大小: 238.5G"
         }
-        card "Samsung Portable SSD T7\n大小: 931.5G"
+        card "Rke2-Agent Node\nhostname: d1581with6600xt\nModel name: Intel(R) Xeon(R) CPU D-1581 @ 1.80GHz\n記憶體: 64G\nAMD Navi 23 Radeon RX 6600 XT\n[192.168.80.27]" {
+          card "Apacer AS340\n系統碟\n大小: 120GB"
+          card "storageclass: openebs-zfs-hdd\ncompression: lz4\nfstype: zfs\npoolname: openebs-hdd-pool\nrecordsize: 128k" {
+            card "SEAGATE ST4000VX007\n大小: 3.6T\n備註: Seagate SkyHawk（監控鷹）4TB CMR（傳統磁性記錄)"
+          }
+          card "Samsung Portable SSD T7\n大小: 931.5G"
+        }
       }
     }
   }
