@@ -87,7 +87,8 @@ fleet-rke2-homelab/
 ```plantuml
 @startuml
 cloud "aws" {
-  storage "s3 bucket\nfor clusters backup" as s3
+  storage "s3 bucket\nfor rke2 clusters backup\netcd-s3-bucket: paas-service-zero-etcd-backup" as s3_rke2
+  storage "s3 bucket\nfor longhorn backup" as s3_lh
 }
 cloud "homelab" {
   card "中華電信數據機" {
@@ -110,7 +111,7 @@ cloud "homelab" {
       }
       cloud "Rancher local\nProvider: RKE2" {
         card "backup_restore" {
-          card "etcd-s3\nEnable backup to S3\n/etc/rancher/rke2/config.yaml" as etcd_s3
+          card "etcd-s3\nEnable backup to S3\n/etc/rancher/rke2/config.yaml\netcd-s3-folder: zero-etcd" as etcd_s3
           card "longhorn backup" as lh_backup
         }
 
