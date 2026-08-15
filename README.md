@@ -82,6 +82,42 @@ fleet-rke2-homelab/
 
 ---
 
+## 🖥️ RKE2 群集部屬架構總覽圖
+
+```plantuml
+@startuml
+cloud "homelab" {
+  card "中華電信數據機" {
+    port cht_p4
+
+    cloud "Omada Network" {
+      card "路由器\nTPlink Omada ER605\n[192.168.80.1]"
+      card "控制器\nTPlink Omada OC200\n[192.168.80.100]"
+      card "交換器\nTPlink TL-SG108E" {
+        port sg108e_p8
+      }
+      card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
+        card "ST500DM002-1BD14\n大小: 465.8G"
+        card "TS1TMTS830S\n大小: 953.9G"
+        card "PC711 NVMe SK hynix\n大小: 238.5G"
+      }
+      card "Rke2-Agent Node\nhostname: d1581with6600xt\nModel name: Intel(R) Xeon(R) CPU D-1581 @ 1.80GHz\n記憶體: 64G\nAMD Navi 23 Radeon RX 6600 XT\n[192.168.80.27]" {
+        card "Apacer AS340\n系統碟\n大小: 120GB"
+        card "storageclass: openebs-zfs-hdd\ncompression: lz4\nfstype: zfs\npoolname: openebs-hdd-pool\nrecordsize: 128k" {
+          card "SEAGATE ST4000VX007\n大小: 3.6T\n備註: Seagate SkyHawk（監控鷹）4TB CMR（傳統磁性記錄)"
+        }
+        card "Samsung Portable SSD T7\n大小: 931.5G"
+      }
+    }
+  }
+}
+
+cht_p4 <-.-> sg108e_p8 : 1G(cat8)
+@enduml
+```
+
+---
+
 ## 🌐 叢集全域變數 (Cluster templateValues)
 
 在 Rancher 平台的 `Cluster` 資源 (`fleet-local` 命名空間下的 `local` 叢集) 之 `spec.templateValues` 中可定義叢集共享變數。本專案中的所有 Fleet Bundle (`fleet.yaml`) 可透過 `${ .ClusterValues.<key> }` 動態引用：
@@ -89,6 +125,7 @@ fleet-rke2-homelab/
 ### Rancher Cluster 設定範例 (`spec.templateValues`)
 
 可在 Rancher UI 或經由 `kubectl edit cluster -n fleet-local local` 設定：
+
 ```yaml
 spec:
   templateValues:
@@ -106,7 +143,7 @@ spec:
       ssdClass: longhorn-ssd
 ```
 
-### 專案可用的共享變數列表：
+### 專案可用的共享變數列表
 
 | 變數路徑 (Key Path) | 設定範例值 | Fleet 引用語法 | 說明 |
 | :--- | :--- | :--- | :--- |
@@ -118,7 +155,7 @@ spec:
 | `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量/慢速 HDD 儲存類別 |
 | `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
 
-### `fleet.yaml` 引用範例：
+### `fleet.yaml` 引用範例
 
 ```yaml
 helm:
@@ -166,6 +203,7 @@ spec:
 ```
 
 套用指令：
+
 ```bash
 kubectl apply -f homelab-infrastructure.yaml
 ```
