@@ -92,11 +92,13 @@ cloud "homelab" {
 
     cloud "Omada Network" {
       card "路由器\nTPlink Omada ER605\n[192.168.80.1]" {
-        port "WAN1(PPOE動態IP)" as wan1
-        port "WAN2(PPOE動態IP)" as wan2
-        port "WAN3(PPOE動態IP)" as wan3
+        port "Port1\nWAN1(PPOE動態IP)" as er605_p1
+        port "Port2\nWAN2(PPOE動態IP)" as er605_p2
+        port "Port3\nWAN3(PPOE動態IP)" as er605_p3
+        port "Port4\nLAN4" as er605_lan4
+        port "Port5\nLAN5" as er605_lan5
       }
-      card "控制器\nTPlink Omada OC200\n[192.168.80.100]"
+      card "控制器\nTPlink Omada OC200\n[192.168.80.100]" as oc200
       card "交換器\nTPlink TL-SG108E" {
         port sg108e_p8
         port sg108e_p7
@@ -122,6 +124,10 @@ cloud "homelab" {
 }
 
 cht_p4 <-.-> sg108e_p8 : 1G(cat8)
+er605_p1 -> sg108e_p7 : 1G(cat6a)
+er605_p2 -> sg108e_p6 : 1G(cat6a)
+er605_p3 -> sg108e_p5 : 1G(cat6a)
+er605_lan4 -> oc200 : 100Mbps(cat6a)
 @enduml
 ```
 
