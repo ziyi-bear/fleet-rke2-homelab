@@ -86,6 +86,9 @@ fleet-rke2-homelab/
 
 ```plantuml
 @startuml
+cloud "aws" {
+  storage "s3 bucket\nfor clusters backup" as s3
+}
 cloud "homelab" {
   card "中華電信數據機" {
     port cht_p4
