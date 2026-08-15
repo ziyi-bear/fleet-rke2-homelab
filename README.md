@@ -91,10 +91,17 @@ cloud "homelab" {
     port cht_p4
 
     cloud "Omada Network" {
-      card "路由器\nTPlink Omada ER605\n[192.168.80.1]"
+      card "路由器\nTPlink Omada ER605\n[192.168.80.1]" {
+        port "WAN1(PPOE動態IP)" as wan1
+        port "WAN2(PPOE動態IP)" as wan2
+        port "WAN3(PPOE動態IP)" as wan3
+      }
       card "控制器\nTPlink Omada OC200\n[192.168.80.100]"
       card "交換器\nTPlink TL-SG108E" {
         port sg108e_p8
+        port sg108e_p7
+        port sg108e_p6
+        port sg108e_p5
       }
       card "Rke2-Server Node\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
         card "ST500DM002-1BD14\n大小: 465.8G"
