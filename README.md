@@ -162,6 +162,9 @@ er605_lan5 -> sg108e_p4 : 1G(cat8)
 sg108e_p1 -> delloptiplex5090 : 1G(cat8)
 sg108e_p2 -> d1581with6600xt : 1G(cat8)
 
+er605_p1 -> ic_nginx : NAT(Port 80, 443)+DuckDNS(p1-ziyi-bear.duckdns.org)
+er605_p2 -> ic_traefik : NAT(Port 80, 443)+DuckDNS(p2-ziyi-bear.duckdns.org)
+
 rke2_etcd_snapshot <--> s3 : s3 bucket
 lh_backup <--> s3 : s3 bucket
 @enduml
