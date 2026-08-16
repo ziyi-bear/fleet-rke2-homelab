@@ -107,10 +107,16 @@ cloud "homelab" {
       }
       card "控制器\nTPlink Omada OC200\n[192.168.80.100]" as oc200
       card "交換器\nTPlink TL-SG108E" {
+        ' WAN網路
         port sg108e_p8
         port sg108e_p7
         port sg108e_p6
         port sg108e_p5
+        ' LAN網路
+        port sg108e_p4
+        port sg108e_p3
+        port sg108e_p2
+        port sg108e_p1
       }
       cloud "Rancher local\nProvider: RKE2" {
         card "backup_restore" {
@@ -147,10 +153,14 @@ cloud "homelab" {
 }
 
 cht_p4 <-.-> sg108e_p8 : 1G(cat8)
-er605_p1 -> sg108e_p7 : 1G(cat6a)
-er605_p2 -> sg108e_p6 : 1G(cat6a)
-er605_p3 -> sg108e_p5 : 1G(cat6a)
+er605_p1 -> sg108e_p7 : 1G(cat8)
+er605_p2 -> sg108e_p6 : 1G(cat8)
+er605_p3 -> sg108e_p5 : 1G(cat8)
 er605_lan4 -> oc200 : 100Mbps(cat6a)
+er605_lan5 -> sg108e_p4 : 1G(cat8)
+
+sg108e_p1 -> delloptiplex5090 : 1G(cat8)
+sg108e_p2 -> d1581with6600xt : 1G(cat8)
 
 rke2_etcd_snapshot <--> s3 : s3 bucket
 lh_backup <--> s3 : s3 bucket
