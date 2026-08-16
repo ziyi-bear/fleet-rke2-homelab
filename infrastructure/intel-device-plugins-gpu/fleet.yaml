@@ -11,8 +11,12 @@ helm:
   values:
     sharedDevNum: "6"
 
+dependsOn:
+  - selector:
+      matchLabels:
+        app: intel-device-plugins-operator
+
 # Optional: Uncomment if NFD bundle is managed via Fleet
-# dependsOn:
 #   - selector:
 #       matchLabels:
 #         app: nfd
