@@ -1,0 +1,15 @@
+defaultNamespace: metallb-system
+
+labels:
+  app: metallb-config
+
+dependsOn:
+  - selector:
+      matchLabels:
+        app: metallb
+
+templateValues:
+  poolName: ipaddresspool-basic
+  l2AdvName: l2advertisement-basic
+  addresses:
+    - "192.168.80.39-192.168.80.49"

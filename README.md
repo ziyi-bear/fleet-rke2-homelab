@@ -29,6 +29,7 @@
 * **[sealed-secrets](infrastructure/sealed-secrets/)**：將 Kubernetes Secret 加密為可安全提交至 Git 的 SealedSecret 自訂資源。
 * **[intel-device-plugins-gpu](infrastructure/intel-device-plugins-gpu/)**：Intel GPU 裝置外掛程式 (GPU Device Plugin for Kubernetes)。
 * **[intel-device-plugins-operator](infrastructure/intel-device-plugins-operator/)**：Intel 裝置外掛程式 Operator (Intel Device Plugins Operator for Kubernetes)。
+* **[metallb-config](infrastructure/metallb-config/)**：MetalLB IPAddressPool 與 L2Advertisement 網路池組態設定。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
 
@@ -65,8 +66,11 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # Bitnami Sealed Secrets 加密控制器部署設定
 │   ├── intel-device-plugins-gpu/
 │   │   └── fleet.yaml                    # Intel GPU Device Plugin 部署設定
-│   └── intel-device-plugins-operator/
-│       └── fleet.yaml                    # Intel Device Plugins Operator 部署設定
+│   ├── intel-device-plugins-operator/
+│   │   └── fleet.yaml                    # Intel Device Plugins Operator 部署設定
+│   └── metallb-config/
+│       ├── fleet.yaml                    # MetalLB IP 網路池與 L2 廣播設定
+│       └── ip-pool.yaml                  # IPAddressPool 與 L2Advertisement 範本
 ├── base/                                 # 基礎組件 (可供 kustomize 或參考)
 │   ├── ollama/
 │   │   └── fleet.yaml                    # Ollama 引擎設定
@@ -130,6 +134,16 @@ cloud "homelab" {
           card "longhorn backup" as lh_backup
         }
 
+        card "L2Advertisement" {
+          card "l2advertisement-basic" as l2ad_basic
+        }
+
+        card "IPAddressPool" {
+          card "ipaddresspool-basic\naddresses" {
+            card "192.168.80.39-192.168.80.49" as iap_basic
+          }
+        }
+
         card "IngressClass" {
           card "nginx\nController:\nk8s.io/ingress-nginx" as ic_nginx
           card "traefik\nController:\ntraefik.io/ingress-controller" as ic_traefik
@@ -167,6 +181,8 @@ er605_lan5 -> sg108e_p4 : 1G(cat8)
 
 sg108e_p1 -> delloptiplex5090 : 1G(cat8)
 sg108e_p2 -> d1581with6600xt : 1G(cat8)
+
+l2ad_basic --> iap_basic : ipAddressPools
 
 er605_p1 -> ic_nginx : NAT(Port 80, 443)+DuckDNS(p1-ziyi-bear.duckdns.org)
 er605_p2 -> ic_traefik : NAT(Port 80, 443)+DuckDNS(p2-ziyi-bear.duckdns.org)
