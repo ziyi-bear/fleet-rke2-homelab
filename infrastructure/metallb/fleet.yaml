@@ -8,4 +8,5 @@ helm:
   chart: metallb
   releaseName: metallb
   version: 0.16.1
-  atomic: true
+  # Removed atomic: true to prevent Helm timeout/rollback on DaemonSet rollout delays
+  timeoutSeconds: 600
