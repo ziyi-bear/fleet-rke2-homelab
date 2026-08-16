@@ -106,6 +106,13 @@ cloud "aws" {
   storage "s3 bucket\nfor rke2 clusters backup\netcd-s3-bucket: paas-service-zero-etcd-backup" as s3_rke2
   storage "s3 bucket\nfor longhorn backup" as s3_lh
 }
+
+cloud "cloudflare" {
+  card "DNS Records" as cf_dns
+  card "cloudflare cert-manager issuer" as cf_cm
+  card "cloudflare tunnel" as cf_tunnel
+}
+
 cloud "homelab" {
   card "中華電信數據機" {
     port cht_p4
