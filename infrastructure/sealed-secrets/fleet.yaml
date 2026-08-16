@@ -1,4 +1,5 @@
 defaultNamespace: sealed-secrets
+
 labels:
   app: sealed-secrets
 
@@ -6,4 +7,6 @@ helm:
   repo: https://bitnami.github.io/sealed-secrets
   chart: sealed-secrets
   releaseName: sealed-secrets
+  # Chart version 2.19.1 corresponds to Sealed Secrets Controller v0.38.4
   version: 2.19.1
+

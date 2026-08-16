@@ -26,6 +26,7 @@
 * **[openebs](infrastructure/openebs/)**：提供本地磁碟的動態儲存卷 (StorageClass) 供應。
 * **[cnpg (CloudNativePG)](infrastructure/cnpg/)**：管理叢集內高可用的 PostgreSQL 資料庫。
 * **[keda](infrastructure/keda/)**：Kubernetes 事件驅動自動擴充 (Event-driven Autoscaling) 控制器。
+* **[sealed-secrets](infrastructure/sealed-secrets/)**：將 Kubernetes Secret 加密為可安全提交至 Git 的 SealedSecret 自訂資源。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
 
@@ -56,8 +57,10 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # cert-manager 部署設定
 │   ├── openebs/
 │   │   └── fleet.yaml                    # OpenEBS 部署設定
-│   └── keda/
-│       └── fleet.yaml                    # KEDA 部署設定
+│   ├── keda/
+│   │   └── fleet.yaml                    # KEDA 部署設定
+│   └── sealed-secrets/
+│       └── fleet.yaml                    # Bitnami Sealed Secrets 加密控制器部署設定
 ├── base/                                 # 基礎組件 (可供 kustomize 或參考)
 │   ├── ollama/
 │   │   └── fleet.yaml                    # Ollama 引擎設定
@@ -82,6 +85,90 @@ fleet-rke2-homelab/
 
 ---
 
+## 🖥️ RKE2 群集部屬架構總覽圖
+
+```plantuml
+@startuml
+cloud "aws" {
+  storage "s3 bucket\nfor rke2 clusters backup\netcd-s3-bucket: paas-service-zero-etcd-backup" as s3_rke2
+  storage "s3 bucket\nfor longhorn backup" as s3_lh
+}
+cloud "homelab" {
+  card "中華電信數據機" {
+    port cht_p4
+
+    cloud "Omada Network" {
+      card "路由器\nTPlink Omada ER605\n[192.168.80.1]" {
+        port "Port1\nWAN1(PPOE動態IP)" as er605_p1
+        port "Port2\nWAN2(PPOE動態IP)" as er605_p2
+        port "Port3\nWAN3(PPOE動態IP)" as er605_p3
+        port "Port4\nLAN4" as er605_lan4
+        port "Port5\nLAN5" as er605_lan5
+      }
+      card "控制器\nTPlink Omada OC200\n[192.168.80.100]" as oc200
+      card "交換器\nTPlink TL-SG108E" {
+        ' WAN網路
+        port sg108e_p8
+        port sg108e_p7
+        port sg108e_p6
+        port sg108e_p5
+        ' LAN網路
+        port sg108e_p4
+        port sg108e_p3
+        port sg108e_p2
+        port sg108e_p1
+      }
+      cloud "Rancher local\nProvider: RKE2" {
+        card "backup_restore" {
+          card "etcd-s3\nEnable backup to S3\n/etc/rancher/rke2/config.yaml\netcd-s3-folder: zero-etcd" as etcd_s3
+          card "longhorn backup" as lh_backup
+        }
+
+        card "IngressClass" {
+          card "nginx\nController:\nk8s.io/ingress-nginx" as ic_nginx
+          card "traefik\nController:\ntraefik.io/ingress-controller" as ic_traefik
+        }
+        card "StorageClass" {
+          card "longhorn (default)\ndriver.longhorn.io"
+          card "longhorn-ssd\ndriver.longhorn.io"
+          card "openebs-zfs-hdd\nzfs.csi.openebs.io"
+        }
+
+        card "Rke2-Server Node (can also work as agent)\nhostname: delloptiplex5090\nModel name: Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz\n記憶體: 96G\n[192.168.80.17]" {
+          card "ST500DM002-1BD14\n大小: 465.8G"
+          card "TS1TMTS830S\n大小: 953.9G"
+          card "PC711 NVMe SK hynix\n大小: 238.5G"
+        }
+        card "Rke2-Agent Node\nhostname: d1581with6600xt\nModel name: Intel(R) Xeon(R) CPU D-1581 @ 1.80GHz\n記憶體: 64G\nAMD Navi 23 Radeon RX 6600 XT\n[192.168.80.27]" {
+          card "主機板: 火神d1581 r3"
+          card "Apacer AS340\n系統碟\n大小: 120GB"
+          card "storageclass: openebs-zfs-hdd\ncompression: lz4\nfstype: zfs\npoolname: openebs-hdd-pool\nrecordsize: 128k" {
+            card "SEAGATE ST4000VX007\n大小: 3.6T\n備註: Seagate SkyHawk（監控鷹）4TB CMR（傳統磁性記錄)"
+          }
+          card "Samsung Portable SSD T7\n大小: 931.5G"
+        }
+      }
+    }
+  }
+}
+
+cht_p4 <-.-> sg108e_p8 : 1G(cat8)
+er605_p1 -> sg108e_p7 : 1G(cat8)
+er605_p2 -> sg108e_p6 : 1G(cat8)
+er605_p3 -> sg108e_p5 : 1G(cat8)
+er605_lan4 -> oc200 : 100Mbps(cat6a)
+er605_lan5 -> sg108e_p4 : 1G(cat8)
+
+sg108e_p1 -> delloptiplex5090 : 1G(cat8)
+sg108e_p2 -> d1581with6600xt : 1G(cat8)
+
+rke2_etcd_snapshot <--> s3 : s3 bucket
+lh_backup <--> s3 : s3 bucket
+@enduml
+```
+
+---
+
 ## 🌐 叢集全域變數 (Cluster templateValues)
 
 在 Rancher 平台的 `Cluster` 資源 (`fleet-local` 命名空間下的 `local` 叢集) 之 `spec.templateValues` 中可定義叢集共享變數。本專案中的所有 Fleet Bundle (`fleet.yaml`) 可透過 `${ .ClusterValues.<key> }` 動態引用：
@@ -89,11 +176,16 @@ fleet-rke2-homelab/
 ### Rancher Cluster 設定範例 (`spec.templateValues`)
 
 可在 Rancher UI 或經由 `kubectl edit cluster -n fleet-local local` 設定：
+
 ```yaml
 spec:
   templateValues:
-    certManager:
-      clusterIssuer: letsencrypt-cloudflare
+    # 1. 叢集與基本資訊
+    cluster:
+      name: rke2-homelab
+      environment: homelab
+
+    # 2. 網路與網域設定
     domain:
       base: mlc.app
     ingress:
@@ -101,24 +193,51 @@ spec:
       targets:
         nginx: p1-ziyi-bear.duckdns.org
         traefik: p2-ziyi-bear.duckdns.org
+
+    # 3. 憑證管理
+    certManager:
+      clusterIssuer: letsencrypt-cloudflare
+
+    # 4. 分層儲存架構 (完整涵蓋架構圖的三種 StorageClass)
     storage:
-      hddClass: openebs-zfs-hdd
+      defaultClass: longhorn
       ssdClass: longhorn-ssd
+      hddClass: openebs-zfs-hdd
+      zfsPool: openebs-hdd-pool
+
+    # 5. AWS S3 異地備份 (對應架構圖 AWS S3 Bucket)
+    backup:
+      s3:
+        bucket: homelab-rke2-backups
+        region: ap-northeast-1
+        endpoint: s3.amazonaws.com
+
+    # 6. 硬體與 AI 運算節點 (對應 AMD RX 6600 XT / d1581with6600xt 節點)
+    hardware:
+      gpuNode: d1581with6600xt
+      gpuType: amd-rocm
 ```
 
-### 專案可用的共享變數列表：
+### 專案可用的共享變數列表
 
 | 變數路徑 (Key Path) | 設定範例值 | Fleet 引用語法 | 說明 |
 | :--- | :--- | :--- | :--- |
-| `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager 發證機構名稱 |
+| `cluster.name` | `rke2-homelab` | `${ .ClusterValues.cluster.name }` | 叢集識別名稱 |
+| `cluster.environment` | `homelab` | `${ .ClusterValues.cluster.environment }` | 運行環境分類 (`homelab` / `prod`) |
 | `domain.base` | `mlc.app` | `${ .ClusterValues.domain.base }` | 叢集基礎網域名稱 |
 | `ingress.class` | `nginx` | `${ .ClusterValues.ingress.class }` | 預設 Ingress Controller 類別 |
 | `ingress.targets.nginx` | `p1-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.nginx }` | `nginx` Ingress Class 之公網/目標 Host |
 | `ingress.targets.traefik` | `p2-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.traefik }` | `traefik` Ingress Class 之公網/目標 Host |
-| `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量/慢速 HDD 儲存類別 |
+| `certManager.clusterIssuer` | `letsencrypt-cloudflare` | `${ .ClusterValues.certManager.clusterIssuer }` | Cert-Manager SSL 憑證簽發者名稱 |
+| `storage.defaultClass` | `longhorn` | `${ .ClusterValues.storage.defaultClass }` | 預設通用儲存類別 |
 | `storage.ssdClass` | `longhorn-ssd` | `${ .ClusterValues.storage.ssdClass }` | 高速 SSD 儲存類別 |
+| `storage.hddClass` | `openebs-zfs-hdd` | `${ .ClusterValues.storage.hddClass }` | 高容量 ZFS HDD 儲存類別 |
+| `storage.zfsPool` | `openebs-hdd-pool` | `${ .ClusterValues.storage.zfsPool }` | OpenEBS ZFS 專屬儲存池名稱 |
+| `backup.s3.bucket` | `homelab-rke2-backups` | `${ .ClusterValues.backup.s3.bucket }` | AWS S3 異地備份 Bucket 名稱 |
+| `backup.s3.region` | `ap-northeast-1` | `${ .ClusterValues.backup.s3.region }` | AWS S3 區域 |
+| `hardware.gpuNode` | `d1581with6600xt` | `${ .ClusterValues.hardware.gpuNode }` | 具備 AMD GPU 硬體加速之 Node 名稱 |
 
-### `fleet.yaml` 引用範例：
+### `fleet.yaml` 引用範例
 
 ```yaml
 helm:
@@ -127,10 +246,13 @@ helm:
       ingressClassName: "${ .ClusterValues.ingress.class }"
       annotations:
         cert-manager.io/cluster-issuer: "${ .ClusterValues.certManager.clusterIssuer }"
+        external-dns.alpha.kubernetes.io/target: "${ .ClusterValues.ingress.targets.nginx }"
       hosts:
         - host: "app.${ .ClusterValues.domain.base }"
     persistence:
       storageClass: "${ .ClusterValues.storage.ssdClass }"
+    nodeSelector:
+      kubernetes.io/hostname: "${ .ClusterValues.hardware.gpuNode }"
 ```
 
 ---
@@ -166,6 +288,7 @@ spec:
 ```
 
 套用指令：
+
 ```bash
 kubectl apply -f homelab-infrastructure.yaml
 ```
@@ -180,4 +303,4 @@ kubectl apply -f homelab-infrastructure.yaml
    可以直接在 `fleet.yaml` 的 `helm.values` 區段下進行設定，或是提供 `values.yaml` 並在 `fleet.yaml` 中引用。
 3. **敏感資訊管理**：
    > [!WARNING]
-   > 請勿將任何明文金鑰、密碼 (Secrets) 直接提交至 Git。建議使用 **ExternalSecrets**、**HashiCorp Vault** 或透過 Rancher Console 在目標 Namespace 中預先手動建立 Secret，並在 `fleet.yaml` 中引用。
+   > 請勿將任何明文金鑰、密碼 (Secrets) 直接提交至 Git。建議使用 **SealedSecrets (kubeseal)**、**ExternalSecrets**、**HashiCorp Vault** 或透過 Rancher Console 在目標 Namespace 中預先手動建立 Secret，並在 `fleet.yaml` 中引用。
