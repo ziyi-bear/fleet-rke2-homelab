@@ -1,0 +1,11 @@
+defaultNamespace: metallb-system
+
+labels:
+  app: metallb
+
+helm:
+  repo: https://metallb.github.io/metallb
+  chart: metallb
+  releaseName: metallb
+  version: 0.16.1
+  atomic: true

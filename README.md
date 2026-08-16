@@ -29,6 +29,7 @@
 * **[sealed-secrets](infrastructure/sealed-secrets/)**：將 Kubernetes Secret 加密為可安全提交至 Git 的 SealedSecret 自訂資源。
 * **[intel-device-plugins-gpu](infrastructure/intel-device-plugins-gpu/)**：Intel GPU 裝置外掛程式 (GPU Device Plugin for Kubernetes)。
 * **[intel-device-plugins-operator](infrastructure/intel-device-plugins-operator/)**：Intel 裝置外掛程式 Operator (Intel Device Plugins Operator for Kubernetes)。
+* **[metallb](infrastructure/metallb/)**：MetalLB 負載平衡器控制項 (Helm Chart)。
 * **[metallb-config](infrastructure/metallb-config/)**：MetalLB IPAddressPool 與 L2Advertisement 網路池組態設定。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
@@ -68,6 +69,8 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # Intel GPU Device Plugin 部署設定
 │   ├── intel-device-plugins-operator/
 │   │   └── fleet.yaml                    # Intel Device Plugins Operator 部署設定
+│   ├── metallb/
+│   │   └── fleet.yaml                    # MetalLB 控制器 (Helm Chart)
 │   └── metallb-config/
 │       ├── fleet.yaml                    # MetalLB IP 網路池與 L2 廣播設定
 │       └── ip-pool.yaml                  # IPAddressPool 與 L2Advertisement 範本
