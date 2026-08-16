@@ -20,3 +20,11 @@ dependsOn:
 #   - selector:
 #       matchLabels:
 #         app: nfd
+
+diff:
+  comparePatches:
+    - apiVersion: deviceplugin.intel.com/v1
+      kind: GpuDevicePlugin
+      name: gpudeviceplugin-sample
+      jsonPointers:
+        - /spec/monitoringMode
