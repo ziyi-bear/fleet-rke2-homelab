@@ -26,6 +26,7 @@
 * **[openebs](infrastructure/openebs/)**：提供本地磁碟的動態儲存卷 (StorageClass) 供應。
 * **[cnpg (CloudNativePG)](infrastructure/cnpg/)**：管理叢集內高可用的 PostgreSQL 資料庫。
 * **[keda](infrastructure/keda/)**：Kubernetes 事件驅動自動擴充 (Event-driven Autoscaling) 控制器。
+* **[sealed-secrets](infrastructure/sealed-secrets/)**：將 Kubernetes Secret 加密為可安全提交至 Git 的 SealedSecret 自訂資源。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
 
@@ -56,8 +57,10 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # cert-manager 部署設定
 │   ├── openebs/
 │   │   └── fleet.yaml                    # OpenEBS 部署設定
-│   └── keda/
-│       └── fleet.yaml                    # KEDA 部署設定
+│   ├── keda/
+│   │   └── fleet.yaml                    # KEDA 部署設定
+│   └── sealed-secrets/
+│       └── fleet.yaml                    # Bitnami Sealed Secrets 加密控制器部署設定
 ├── base/                                 # 基礎組件 (可供 kustomize 或參考)
 │   ├── ollama/
 │   │   └── fleet.yaml                    # Ollama 引擎設定
@@ -290,4 +293,4 @@ kubectl apply -f homelab-infrastructure.yaml
    可以直接在 `fleet.yaml` 的 `helm.values` 區段下進行設定，或是提供 `values.yaml` 並在 `fleet.yaml` 中引用。
 3. **敏感資訊管理**：
    > [!WARNING]
-   > 請勿將任何明文金鑰、密碼 (Secrets) 直接提交至 Git。建議使用 **ExternalSecrets**、**HashiCorp Vault** 或透過 Rancher Console 在目標 Namespace 中預先手動建立 Secret，並在 `fleet.yaml` 中引用。
+   > 請勿將任何明文金鑰、密碼 (Secrets) 直接提交至 Git。建議使用 **SealedSecrets (kubeseal)**、**ExternalSecrets**、**HashiCorp Vault** 或透過 Rancher Console 在目標 Namespace 中預先手動建立 Secret，並在 `fleet.yaml` 中引用。
