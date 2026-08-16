@@ -214,6 +214,8 @@ spec:
       environment: homelab
 
     # 2. 網路與網域設定
+    network:
+      metalLbIpRange: "192.168.80.39-192.168.80.49"
     domain:
       base: mlc.app
     ingress:
@@ -252,6 +254,7 @@ spec:
 | :--- | :--- | :--- | :--- |
 | `cluster.name` | `rke2-homelab` | `${ .ClusterValues.cluster.name }` | 叢集識別名稱 |
 | `cluster.environment` | `homelab` | `${ .ClusterValues.cluster.environment }` | 運行環境分類 (`homelab` / `prod`) |
+| `network.metalLbIpRange` | `192.168.80.39-192.168.80.49` | `${ .ClusterValues.network.metalLbIpRange }` | MetalLB 負載平衡器配發之 IP 位址區段 |
 | `domain.base` | `mlc.app` | `${ .ClusterValues.domain.base }` | 叢集基礎網域名稱 |
 | `ingress.class` | `nginx` | `${ .ClusterValues.ingress.class }` | 預設 Ingress Controller 類別 |
 | `ingress.targets.nginx` | `p1-ziyi-bear.duckdns.org` | `${ .ClusterValues.ingress.targets.nginx }` | `nginx` Ingress Class 之公網/目標 Host |
