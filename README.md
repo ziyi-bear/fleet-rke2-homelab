@@ -27,6 +27,8 @@
 * **[cnpg (CloudNativePG)](infrastructure/cnpg/)**：管理叢集內高可用的 PostgreSQL 資料庫。
 * **[keda](infrastructure/keda/)**：Kubernetes 事件驅動自動擴充 (Event-driven Autoscaling) 控制器。
 * **[sealed-secrets](infrastructure/sealed-secrets/)**：將 Kubernetes Secret 加密為可安全提交至 Git 的 SealedSecret 自訂資源。
+* **[intel-device-plugins-gpu](infrastructure/intel-device-plugins-gpu/)**：Intel GPU 裝置外掛程式 (GPU Device Plugin for Kubernetes)。
+* **[intel-device-plugins-operator](infrastructure/intel-device-plugins-operator/)**：Intel 裝置外掛程式 Operator (Intel Device Plugins Operator for Kubernetes)。
 
 ### 2. 🔑 單一整合登入平台與應用 (SSO & Applications)
 
@@ -59,8 +61,12 @@ fleet-rke2-homelab/
 │   │   └── fleet.yaml                    # OpenEBS 部署設定
 │   ├── keda/
 │   │   └── fleet.yaml                    # KEDA 部署設定
-│   └── sealed-secrets/
-│       └── fleet.yaml                    # Bitnami Sealed Secrets 加密控制器部署設定
+│   ├── sealed-secrets/
+│   │   └── fleet.yaml                    # Bitnami Sealed Secrets 加密控制器部署設定
+│   ├── intel-device-plugins-gpu/
+│   │   └── fleet.yaml                    # Intel GPU Device Plugin 部署設定
+│   └── intel-device-plugins-operator/
+│       └── fleet.yaml                    # Intel Device Plugins Operator 部署設定
 ├── base/                                 # 基礎組件 (可供 kustomize 或參考)
 │   ├── ollama/
 │   │   └── fleet.yaml                    # Ollama 引擎設定

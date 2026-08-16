@@ -1,0 +1,18 @@
+defaultNamespace: intel-device-plugins
+
+labels:
+  app: intel-device-plugins-gpu
+
+helm:
+  repo: https://intel.github.io/helm-charts
+  chart: intel-device-plugins-gpu
+  releaseName: intel-device-plugins
+  version: 0.36.0
+  values:
+    sharedDevNum: "6"
+
+# Optional: Uncomment if NFD bundle is managed via Fleet
+# dependsOn:
+#   - selector:
+#       matchLabels:
+#         app: nfd
